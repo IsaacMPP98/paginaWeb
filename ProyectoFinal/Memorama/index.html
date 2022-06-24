@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Memorama</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- CSS -->
+    <!-- efectos visuales -->
+    <style>
+        :root {
+            --w: calc(70vw / 6);
+            --h: calc(70vh / 4);
+        }
+
+        * {
+            transition: all 0.5s;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            -webkit-perspective: 1000;
+            background: powderblue;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-family: calibri;
+        }
+
+        div {
+            display: inline-block;
+        }
+
+        .area-tarjeta,
+        .tarjeta,
+        .cara {
+            cursor: pointer;
+            width: var(--w);
+            min-width: 100px;
+            height: var(--h);
+        }
+
+        .tarjeta {
+            position: relative;
+            transform-style: preserve-3d;
+            animation: iniciar 5s;
+        }
+
+        .cara {
+            position: absolute;
+            backface-visibility: hidden;
+            box-shadow: inset 0 0 0 5px white;
+            font-size: 500%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .trasera {
+
+            background-color: lightcyan;
+            transform: rotateY(180deg);
+        }
+
+        .superior {
+            background: linear-gradient(orange, darkorange);
+        }
+
+        .nuevo-juego {
+            cursor: pointer;
+            background: linear-gradient(orange, darkorange);
+            padding: 10px;
+            border-radius: 50px;
+            border: white 5px solid;
+            font-size: 130%;
+        }
+
+        img {
+
+            width: 45%;
+        }
+
+        #atras {
+
+            width: 60%;
+        }
+
+        @keyframes iniciar {
+
+            20%,
+            90% {
+                transform: rotateY(180deg);
+            }
+
+            0%,
+            100% {
+                transform: rotateY(0deg);
+            }
+        }
+    </style>
+
+    <!-- HTML -->
+    <!-- estructura visual -->
+    <div>
+        <h1>Movimientos: </h1>
+        <h2 id="movi">0</h2>
+    </div>
+    <div id="tablero">
+    </div>
+
+    <button class="nuevo-juego" onclick="generarTablero()">Nuevo Juego</button>
+    <button class="nuevo-juego" onclick="location.href='/ProyectoFinal/index.html'" >Regresar</button>
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- JS -->
+    <!-- parte lógica -->
+    <script>
+        let cantidadTarjetas = 30;
+        let Movimientos = 0;
+        let mov = document.getElementById("movi")
+        let iconos = []
+        let selecciones = []
+
+        generarTablero()
+
+        function cargarIconos() {
+            iconos = [
+                '<img src="./img/250px-Jwycliffejmk.jpg" width="100%">',
+                '<img src="./img/640px-Arthur_G._Daniells.jpg" width="100%">',
+                '<img src="./img/descarga (1).jpg" width="100%">',
+                '<img src="./img/descarga (2).jpg" width="100%">',
+                '<img src="./img/descarga (3).jpg" width="100%">',
+                '<img src="./img/descarga (4).jpg" width="100%">',
+                '<img src="./img/descarga (5).jpg" width="100%">',
+                '<img src="./img/descarga (6).jpg" width="100%">',
+                '<img src="./img/descarga (7).jpg" width="100%">',
+                '<img src="./img/dudley-m-canright.jpg" width="100%">',
+                '<img src="./img/GuillermoMiller.jpg" width="100%">',
+                '<img src="./img/JaimeWhite.jpg" width="100%">',
+                '<img src="./img/JohnKnox.jpg" width="100%">',
+                '<img src="./img/RAQUELPRESTON.jpg" width="100%">',
+                '<img src="./img/imagen-de-john-harvey-kellogg-tomada-en-1915_ed672898_412x554.jpg" width="100%">',
+
+            ]
+        }
+
+        function generarTablero() {
+            cargarIconos()
+            let len = iconos.length
+            selecciones = []
+            let tablero = document.getElementById("tablero")
+            let tarjetas = []
+
+            for (let i = 0; i < len * 2; i++) {
+                tarjetas.push(`
+                <div class="area-tarjeta" onclick="seleccionarTarjeta(${i})">
+                    <div class="tarjeta" id="tarjeta${i}">
+                        <div class="cara trasera" id="trasera${i}">
+                            ${iconos[0]}
+                        </div>
+                        <div class="cara superior">
+                            '<img id="atras" src="./img/Emblema_del_Club_de_Conquistadores.svg.png" width="90%">'
+                        </div>
+                    </div>
+                </div>        
+                `)
+                if (i % 2 == 1) {
+                    iconos.splice(0, 1)
+
+                }
+            }
+            tarjetas.sort(() => Math.random() - 0.5)
+            tablero.innerHTML = tarjetas.join(" ")
+            Movimientos = 0;
+            mov.innerHTML = ('0');
+
+
+
+        }
+
+        function seleccionarTarjeta(i) {
+
+            let tarjeta = document.getElementById("tarjeta" + i)
+            if (tarjeta.style.transform != "rotateY(180deg)") {
+                tarjeta.style.transform = "rotateY(180deg)"
+                selecciones.push(i)
+                Movimientos++;
+                console.log(Movimientos)
+                mov.innerHTML = Movimientos;
+
+            }
+            if (selecciones.length == 2) {
+                deseleccionar(selecciones)
+                selecciones = []
+            }
+        }
+
+        function deseleccionar(selecciones) {
+            setTimeout(() => {
+                let trasera1 = document.getElementById("trasera" + selecciones[0])
+                let trasera2 = document.getElementById("trasera" + selecciones[1])
+                if (trasera1.innerHTML != trasera2.innerHTML) {
+                    let tarjeta1 = document.getElementById("tarjeta" + selecciones[0])
+                    let tarjeta2 = document.getElementById("tarjeta" + selecciones[1])
+                    tarjeta1.style.transform = "rotateY(0deg)"
+                    tarjeta2.style.transform = "rotateY(0deg)"
+                } else {
+                    trasera1.style.background = "plum"
+                    trasera2.style.background = "plum"
+                }
+                if (verificarFin()) {
+                    swal.fire({
+                        title: `El juego ha finalizado`,
+                        text: `Movimientos Realizados: ` + Movimientos,
+                        icon: `success`
+                    })
+                }
+            }, 1000);
+        }
+
+        function verificarFin() {
+            for (let i = 0; i < cantidadTarjetas; i++) {
+                let trasera = document.getElementById("trasera" + i)
+                if (trasera.style.background != "plum") {
+
+                    return false
+                }
+            }
+            return true
+        }
+
+    </script>
+
+</body>
+</html>
